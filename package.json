@@ -1,0 +1,11 @@
+{
+  "name": "mdn-to-markdown",
+  "version": "1.0.0",
+  "description": "MDN to Wiki  Markdown",
+  "scripts": {
+    "start": "node src",
+    "start:dev": "nodemon --watch src/ src/index.js"
+  },
+  "author": "",
+  "license": "ISC"
+}
