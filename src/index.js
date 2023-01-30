@@ -11,9 +11,22 @@ if (!fs.existsSync(dstFolder)) {
   fs.mkdirSync(dstFolder);
 }
 
+// function dataRegex(data) {
+//   const regex = /old text/g;
+//   const result = data.replace(regex, 'new_text');
+//   return result;
+// }
+
 function dataRegex(data) {
-  const regex = /old text/g;
-  const result = data.replace(regex, 'new_text');
+  console.log(data);
+  data = data.replace(/\r/g, '');
+  const regex = new RegExp('^---\n((?:.|\n)*?)\n---\n', 'm');
+
+  console.log('결과', data.match(regex));
+  const test = new RegExp('^---', 'm');
+  console.log('결과', data.match(test));
+
+  let result = data;
   return result;
 }
 
