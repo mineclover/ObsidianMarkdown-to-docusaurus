@@ -2,6 +2,9 @@
 title:
   - FAQ
   - 가나다라
+two:
+  - FAQ
+  - 가나다라
 ---
 
 # Frequently asked questions
