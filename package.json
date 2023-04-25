@@ -4,7 +4,8 @@
   "description": "MDN to Wiki  Markdown",
   "scripts": {
     "start": "node src",
-    "start:dev": "nodemon --watch src/ src/index.js"
+    "start:dev": "nodemon --watch src/ src/index.js",
+    "sync": "git pull"
   },
   "author": "",
   "license": "ISC",

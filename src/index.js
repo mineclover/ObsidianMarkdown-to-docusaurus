@@ -3,8 +3,8 @@ const path = require('path')
 const yaml = require('js-yaml')
 
 // Define the folder paths
-const srcFolder = path.join(__dirname, '..', 'input')
-const dstFolder = path.join(__dirname, '..', 'output')
+const srcFolder = path.join(__dirname, '../../', 'src/contents')
+const dstFolder = path.join(__dirname, '..', 'docs')
 
 // Check if destination folder exists
 if (!fs.existsSync(dstFolder)) {
