@@ -4,10 +4,8 @@
   "description": "MDN to Wiki  Markdown",
   "scripts": {
     "start": "node src",
-    "start:dev": "nodemon --watch src/ src/index.js",
     "sync": "git pull",
-    "commit": "git add . && git commit -m \"$(date '+%Y-%m-%d %H:%M:%S')\" && git push",
-    "upload": "git add . && git commit -m \"$(date '+%Y-%m-%d %H:%M:%S')\" && git push && npm run upload "
+    "upload": "git add . && git commit -m \"변경 사항 일괄 저장\" && git push "
   },
   "author": "",
   "license": "ISC",
