@@ -6,7 +6,8 @@
     "start": "node src",
     "start:dev": "nodemon --watch src/ src/index.js",
     "sync": "git pull",
-    "commit": "git add . && git commit -m \"$(date '+%Y-%m-%d %H:%M:%S')\" && git push"
+    "commit": "git add . && git commit -m \"$(date '+%Y-%m-%d %H:%M:%S')\" && git push",
+    "upload": "git add . && git commit -m \"$(date '+%Y-%m-%d %H:%M:%S')\" && git push && npm run upload "
   },
   "author": "",
   "license": "ISC",
