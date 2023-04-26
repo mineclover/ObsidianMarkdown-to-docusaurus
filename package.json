@@ -5,7 +5,8 @@
   "scripts": {
     "start": "node src",
     "start:dev": "nodemon --watch src/ src/index.js",
-    "sync": "git pull"
+    "sync": "git pull",
+    "commit": "git add . && git commit -m \"$(date '+%Y-%m-%d %H:%M:%S')\" && git push"
   },
   "author": "",
   "license": "ISC",
