@@ -4,7 +4,7 @@
   "description": "MDN to Wiki  Markdown",
   "scripts": {
     "start": "node src",
-    "sync": "git pull",
+    "sync": "git pull && npm i",
     "upload": "git add . && git commit -m \"변경 사항 일괄 저장\" && git push "
   },
   "author": "",

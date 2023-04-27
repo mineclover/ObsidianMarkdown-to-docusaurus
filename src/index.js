@@ -5,6 +5,13 @@ const yaml = require('js-yaml');
 // Define the folder paths
 const srcFolder = path.join(__dirname, '../../../', 'src/contents');
 const dstFolder = path.join(__dirname, '../../', 'docs');
+fs.rmSync(dstFolder, { recursive: true }, (err) => {
+  if (err) {
+    console.log(err);
+  } else {
+    console.log('Dir is deleted.');
+  }
+});
 
 // Check if destination folder exists
 if (!fs.existsSync(dstFolder)) {
@@ -54,6 +61,7 @@ const ignoreFiles = [
   'desktop.ini',
   'index.tsx',
   '.obsidian',
+  'dev-softer',
 ];
 
 const nameValidate = (str) => {
