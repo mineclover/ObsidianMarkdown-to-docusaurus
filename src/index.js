@@ -5,24 +5,27 @@ const yaml = require('js-yaml');
 // Define the folder paths
 const srcFolder = path.join(__dirname, '../../../', 'src/contents');
 const dstFolder = path.join(__dirname, '../../', 'docs');
+
+// 1. 기존 파일 삭제
 fs.rmSync(dstFolder, { recursive: true }, (err) => {
   if (err) {
     console.log(err);
   } else {
-    console.log('Dir is deleted.');
+    console.log('기존 Dir is deleted.');
   }
 });
 
-// Check if destination folder exists
+// 2. 기존 파일 저장할 파일 생성 docs
 if (!fs.existsSync(dstFolder)) {
   // Create the new folder
   fs.mkdirSync(dstFolder);
 }
 
+// yaml 데이터 정규식으로 추출하는 메서드
 function dataRegex(data) {
-  data = data.replace(/\r/g, '');
-  const regex = new RegExp('^---\n((?:.|\n)*?)\n---\n', 'm');
-  let result = data.match(regex);
+  const temp = data.replace(/\r/g, '');
+  const regex = /^---\n((?:.|\n)*?)\n---\n/m;
+  const result = temp.match(regex);
 
   if (result === null) {
     // console.log('no yaml');
@@ -33,11 +36,13 @@ function dataRegex(data) {
   return data;
 }
 
+// 앞글자 포함시 생략
 const startsValidate = (str) => {
   arr = ['.', '_'];
   return arr.some((text) => str.startsWith(text));
 };
 
+// 뒷글자 포함시 생략
 const endsValidate = (str) => {
   arr = [
     '.ts',
@@ -55,6 +60,8 @@ const endsValidate = (str) => {
   ];
   return arr.some((text) => str.endsWith(text));
 };
+
+// 삭제해야할 특정 파일 또는 폴더 이름, 공유해서 쓰고 있음
 const ignoreFiles = [
   '.DS_Store',
   'Thumbs.db',
@@ -64,33 +71,45 @@ const ignoreFiles = [
   'dev-softer',
 ];
 
+// 전체 경로에서 파일 이름을 찾는 메서드
 const nameValidate = (str) => {
   return ignoreFiles.some((text) => str.endsWith(text));
 };
 
-// Read the contents of the source folder
+// 타겟 폴더를 찾는 재귀함수 메서드
 function targetFolder(inSrcFolder, inDstFolder) {
+  // 복제할 파일을 읽음
   fs.readdir(inSrcFolder, (err, files) => {
     if (err) {
       console.error(err);
       return;
     }
-
+    // 파일들을 순회
+    const pathTest = `${inDstFolder}\\_category_.yml`;
+    const fileName = inDstFolder.split('\\').pop();
+    const yamlContent = yaml.dump({
+      label: fileName,
+      collapsible: true,
+      collapsed: false,
+      link: {
+        type: 'generated-index',
+        title: `${fileName} index`,
+      },
+    });
     files.forEach((file) => {
-      // console.log('🚀 ~ file: index.js:48 ~ files.forEach ~ file:', file);
+      // 순회해서 조회된 파일들 경로 설정
       const srcFile = path.join(inSrcFolder, file);
       const dstFile = path.join(inDstFolder, file);
 
       // 폴더인지 파일인지 확인
       if (fs.lstatSync(srcFile).isDirectory()) {
-        // 폴더인데 없으면 만들기
+        // 폴더인데 dst에 없으면 만들기
         if (!fs.existsSync(dstFile)) {
-          // 특정 이름의 폴더 생성도 제외
-          console.log('dstFile', dstFile);
+          // 특정 이름의 폴더 생성 제외
           if (nameValidate(dstFile)) {
-            console.log('특정 파일 제거', dstFile);
             return;
           }
+          // 현재 위치는 폴더를 만들 때 ~ 추가 조건이 맞으면 동작한다
           fs.mkdirSync(dstFile);
         }
         // 폴더 안에 있는 파일들 대상으로 재귀호출
@@ -100,38 +119,53 @@ function targetFolder(inSrcFolder, inDstFolder) {
 
         if (
           ignoreFiles.includes(file) ||
-          file.startsWith('.') ||
           endsValidate(file) ||
           startsValidate(file)
         ) {
-          console.log(`File ${file} was ignored!`);
           return;
         }
-        // 파일명이 .으로 시작하면 제외
 
         if (!file.endsWith('.md')) {
           // 임시파일이 아닌 파일은 카피해서 넣기
           fs.copyFileSync(srcFile, dstFile);
           return;
         }
+        // 원본 객체 읽기
         fs.readFile(srcFile, 'utf8', (err, data) => {
           if (err) {
             console.error(err);
             return;
           }
+          // 원본 객체 복사
+          const modifiedData = dataRegex(data);
 
-          // Modify the file contents
-          let modifiedData = dataRegex(data);
-
-          // Write the modified contents to the destination file
+          // 생성
           fs.writeFile(dstFile, modifiedData, (err) => {
             if (err) {
               console.error(err);
-              return;
             }
             // console.log(`File ${file} was copied and modified successfully!`);
           });
         });
+
+        // 카테고리 생성
+        // 현재 file 이 아니거나 현재 위치에 _category_.yml 파일이 없으면 생성
+
+        if (!inDstFolder.endsWith('\\file') && !fs.existsSync(pathTest)) {
+          // file 일 경우 생성하지 않음
+          // console.log('pathTest', fileName, file);
+          if (file === 'file' || file === `${fileName}.md`) {
+            // console.log('생성 생략');
+            return;
+          }
+          fs.writeFile(pathTest, yamlContent, (err) => {
+            if (err) {
+              // console.error(pathTest, yamlContent);
+            } else {
+              // console.log('pathTest', inDstFolder);
+            }
+          });
+        }
       }
     });
   });
