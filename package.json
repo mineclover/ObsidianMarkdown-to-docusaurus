@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "description": "MDN to Wiki  Markdown",
   "scripts": {
-    "start": "node src",
+    "start": "node src/indexDe.js",
+    "indexIn": "node src/indexIn",
+    "indexAsync": "node src/indexAsync",
+    "indexDe": "node src/indexDe",
     "sync": "git pull && npm i",
     "upload": "git add . && git commit -m \"변경 사항 일괄 저장\" && git push "
   },

@@ -9,6 +9,26 @@ const base = path.join(__dirname, '../../', 'src');
 const router = path.join(__dirname, '../../', 'src/router', 'router.json');
 const markdown = [];
 
+const saveJson = (router, markdown) => {
+  const json = JSON.stringify(markdown);
+
+  try {
+    fs.accessSync(router);
+    fs.unlinkSync(router);
+    console.log(`${router} is deleted`);
+  } catch (err) {
+    console.error('없는 파일');
+  }
+
+  fs.writeFile(router, json, 'utf8', (err) => {
+    if (err) throw err;
+    console.log('Data written to file');
+    console.timeEnd('test');
+  });
+};
+
+const real = debounce(saveJson, 1000);
+
 console.log(base);
 
 if (!fs.existsSync(dstFolder)) {
@@ -145,8 +165,8 @@ function targetFolder(inSrcFolder, inDstFolder) {
             return;
           }
           // 원본 객체 복사
-          markdown.push(srcFile.replace(base, '..'));
-          console.log('추가함');
+          markdown.push(srcFile.replace(base, '..').replace(/\\/g, '/'));
+          real(router, markdown);
           const modifiedData = dataRegex(data);
           // 생성
           fs.writeFile(dstFile, modifiedData, (err) => {
@@ -182,14 +202,17 @@ function targetFolder(inSrcFolder, inDstFolder) {
 
 console.time('test');
 const test = targetFolder(srcFolder, dstFolder);
-console.timeEnd('test');
+
 // const test = targetFolder(srcFolder, dstFolder).then(() => {
 //   console.timeEnd('test');
 // });
 
-const json = JSON.stringify(markdown);
-
-fs.writeFile(router, json, 'utf8', (err) => {
-  if (err) throw err;
-  console.log('Data written to file');
-});
+function debounce(func, delay) {
+  let timeoutId;
+  return function (...args) {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
+      func.apply(this, args);
+    }, delay);
+  };
+}
