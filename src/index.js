@@ -3,9 +3,15 @@ const path = require('path');
 const yaml = require('js-yaml');
 
 // Define the folder paths
-const srcFolder = path.join(__dirname, '../../../', 'src/contents');
-const dstFolder = path.join(__dirname, '../../', 'docs');
+const srcFolder = path.join(__dirname, '../../', 'src/contents');
+const dstFolder = path.join(__dirname, '../../docusaurus', 'docs');
 
+if (!fs.existsSync(dstFolder)) {
+  // Create the new folder
+  fs.mkdirSync(dstFolder);
+} else {
+  // 없으면 삭제
+}
 // 1. 기존 파일 삭제
 fs.rmSync(dstFolder, { recursive: true }, (err) => {
   if (err) {
@@ -15,10 +21,12 @@ fs.rmSync(dstFolder, { recursive: true }, (err) => {
   }
 });
 
-// 2. 기존 파일 저장할 파일 생성 docs
+// 2. 기존 파일이 있으면 삭제 저장할 파일 생성 docs
 if (!fs.existsSync(dstFolder)) {
   // Create the new folder
   fs.mkdirSync(dstFolder);
+} else {
+  // 없으면 삭제
 }
 
 // yaml 데이터 정규식으로 추출하는 메서드
