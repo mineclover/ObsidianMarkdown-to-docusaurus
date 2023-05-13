@@ -52,15 +52,25 @@ if (!fs.existsSync(dstFolder)) {
 function dataRegex(data) {
   const temp = data.replace(/\r/g, '');
   const regex = /^---\n((?:.|\n)*?)\n---\n/m;
-  const result = temp.match(regex);
+  const isRegex = temp.match(regex);
 
-  if (result === null) {
+  if (isRegex === null) {
     // console.log('no yaml');
   } else {
     // console.log('yaml', yaml.load(result[1]));
   }
+  const regex1 = RegExp(
+    /(?<!`)\[([^\]]*)\]\(((?!.*:\/\/)[^)]*)([^)]*)\)(?!`)/gm
+  );
 
-  return temp;
+  const matchArr = [...temp.matchAll(regex1)];
+  const result = matchArr.map((arr) => {
+    const str = arr[2].replaceAll(/(%20| )/gm, '+');
+    return `[${arr[1]}](${str})`;
+  });
+  result.reverse();
+  const resultText = temp.replaceAll(regex1, () => result.pop());
+  return resultText;
 }
 
 // 앞글자 포함시 생략
@@ -171,6 +181,7 @@ function targetFolder(inSrcFolder, inDstFolder) {
           // 원본 객체 복사
           markdown.push(srcFile.replace(base, '..').replace(/\\/g, '/'));
           real(router, markdown);
+          // 내부 데이터 수정 동작
           const modifiedData = dataRegex(data);
           // 생성
           fs.writeFile(dstFile, modifiedData, (err) => {
@@ -182,13 +193,14 @@ function targetFolder(inSrcFolder, inDstFolder) {
         });
 
         // 카테고리 생성
-        // 현재 file 이 아니거나 현재 위치에 _category_.yml 파일이 없으면 생성
+        // 현재 file이 아니거나 현재 위치에 _category_.yml 파일이 없으면 생성
 
         if (!inDstFolder.endsWith('\\file') && !fs.existsSync(pathTest)) {
           // file 일 경우 생성하지 않음
           // console.log('pathTest', fileName, file);
           if (file === 'file' || file === `${fileName}.md`) {
-            // console.log('생성 생략');
+            // console.log('파일과 이름이 같은 파일이 있을 경우 생성 생략');
+            // 파일을 생성하고 리디렉션 시키는 방식을 고려해야할 듯
             return;
           }
           fs.writeFile(pathTest, yamlContent, (err) => {
@@ -205,12 +217,13 @@ function targetFolder(inSrcFolder, inDstFolder) {
 }
 
 console.time('test');
-const test = targetFolder(srcFolder, dstFolder);
+targetFolder(srcFolder, dstFolder);
 
 // const test = targetFolder(srcFolder, dstFolder).then(() => {
 //   console.timeEnd('test');
 // });
 
+// debounce
 function debounce(func, delay) {
   let timeoutId;
   return function (...args) {
