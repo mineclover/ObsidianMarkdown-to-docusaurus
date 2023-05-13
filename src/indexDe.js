@@ -105,6 +105,7 @@ const nameValidate = (str) => {
 
 // 타겟 폴더를 찾는 재귀함수 메서드
 function targetFolder(inSrcFolder, inDstFolder) {
+  inDstFolder = inDstFolder.replaceAll(/ /g, '+');
   // 복제할 파일을 읽음
   fs.readdir(inSrcFolder, (err, files) => {
     if (err) {
@@ -126,17 +127,20 @@ function targetFolder(inSrcFolder, inDstFolder) {
     files.forEach((file) => {
       // 순회해서 조회된 파일들 경로 설정
       const srcFile = path.join(inSrcFolder, file);
-
-      const dstFile = path.join(inDstFolder, file);
+      // src는 변경하면 안되고.. dst는 변경, 경로도 변경 필요
+      file = file.replaceAll(/ /g, '+');
+      let dstFile = path.join(inDstFolder, file);
 
       // 폴더인지 파일인지 확인
       if (fs.lstatSync(srcFile).isDirectory()) {
         // 폴더인데 dst에 없으면 만들기
         if (!fs.existsSync(dstFile)) {
-          // 특정 이름의 폴더 생성 제외
+          // 특정 찾았는데
           if (nameValidate(dstFile)) {
+            // 조건 충족 하면 폴더 생성 제외
             return;
           }
+
           // 현재 위치는 폴더를 만들 때 ~ 추가 조건이 맞으면 동작한다
           fs.mkdirSync(dstFile);
         }
