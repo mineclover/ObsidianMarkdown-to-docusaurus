@@ -5,7 +5,8 @@ const yaml = require('js-yaml');
 // Define the folder paths
 const srcFolder = path.join(__dirname, '../../', 'src/contents');
 const dstFolder = path.join(__dirname, '../../docusaurus/', 'docs');
-const base = path.join(__dirname, '../../', 'src');
+// const base = path.join(__dirname, '../../', 'src');
+const base = path.join(__dirname, '../../', 'docusaurus/docs');
 const router = path.join(__dirname, '../../', 'src/router', 'router.json');
 const markdown = [];
 
@@ -179,7 +180,11 @@ function targetFolder(inSrcFolder, inDstFolder) {
             return;
           }
           // 원본 객체 복사
-          markdown.push(srcFile.replace(base, '..').replace(/\\/g, '/'));
+          console.log('srcFile', srcFile, 'dstFile', dstFile);
+          //markdown.push(srcFile.replace(base, '..').replace(/\\/g, '/'));
+          markdown.push(
+            dstFile.replace(base, '../contents').replace(/\\/g, '/')
+          );
           real(router, markdown);
           // 내부 데이터 수정 동작
           const modifiedData = dataRegex(data);
